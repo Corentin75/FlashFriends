@@ -143,28 +143,15 @@ public class PlayerController : MonoBehaviour
 
     private void TakePhoto()
     {
-        // Raycast from the centre of the screen
         Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
-        RaycastHit hit;
+        RaycastHit[] hits = Physics.SphereCastAll(ray, 0.5f, photoRange, photoLayer);
 
-        int score = 0;
-
-        if (Physics.Raycast(ray, out hit, photoRange, photoLayer))
+        foreach (var hit in hits)
         {
-            Debug.Log("Photographed object: " + hit.collider.name);
-
-            score = 10; // temporary
+            NPCController npc = hit.collider.GetComponent<NPCController>();
+            if (npc != null)
+                npc.OnPlayerPhotographed();
         }
-        else
-        {
-            Debug.Log("No target");
-        }
-
-        // Call PhotoManager to save image
-        PhotoManager.Instance.CapturePhoto(score);
-
-        // Flash effect
-        StartCoroutine(PhotoFlashEffect());
     }
 
     private IEnumerator PhotoFlashEffect()
