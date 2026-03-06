@@ -167,16 +167,13 @@ public class PlayerController : MonoBehaviour
         }
 
         // Captures photo
-        PhotoManager.Instance?.CapturePhoto(photoScore);
+        PhotoManager.Instance.CapturePhoto(photoScore);
 
         // Calculates score
-        if (QuestManager.Instance != null)
-        {
-            photoScore = QuestManager.Instance.CheckPhotoAndReturnScore(new List<GameObject>(objectsInPhoto));
+        photoScore = QuestManager.Instance.CheckPhotoAndReturnScore(new List<GameObject>(objectsInPhoto));
 
-            if (GameManager.Instance.currentState == GameState.Playing)
-                PhotoFeedbackManager.Instance.ShowFeedback(photoScore);
-        }
+        if (GameManager.Instance.currentState == GameState.Playing)
+            PhotoFeedbackManager.Instance.ShowFeedback(photoScore);
 
         StartCoroutine(PhotoFlashEffect());
     }

@@ -28,8 +28,7 @@ public class SoundManager : MonoBehaviour
     // Plays a sound effect
     public void Play(AudioClip clip)
     {
-        if (clip != null && sfxSource != null)
-            sfxSource.PlayOneShot(clip);
+        sfxSource.PlayOneShot(clip);
     }
 
     // Stops all current SFX
