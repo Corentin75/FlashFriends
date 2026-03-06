@@ -10,6 +10,11 @@ TagManager:
   - DrinkStall
   - Toilets
   - Fountain
+  - FxTemporaire
+  - Stage
+  - IsolatedToilets
+  - MainGate
+  - Bug
   layers:
   - Default
   - TransparentFX

@@ -23,57 +23,49 @@ public class QuestManager : MonoBehaviour
     {
         int photoScore = 0;
 
+        // Score from NPCs
         foreach (GameObject obj in objectsInPhoto)
         {
             NPCController npc = obj.GetComponent<NPCController>();
             if (npc != null)
-            {
                 photoScore += npc.GetPoseScore();
-            }
-
-            if (IsTagRelevant(obj.tag))
-            {
-                photoScore += 10;
-            }
         }
 
-        // Mise à jour score global
         goodVibesScore += photoScore;
 
-        // Vérification des quêtes
+        // Copy active quests to avoid modifying the list while iterating
         List<PhotoQuest> questsCopy = new List<PhotoQuest>(activeQuests);
+
         foreach (PhotoQuest quest in questsCopy)
         {
-            if (quest.completed) continue;
-            if (quest.requiredTags == null || quest.requiredTags.Count == 0) continue;
+            if (quest.completed || quest.requiredTags == null || quest.requiredTags.Count == 0)
+                continue;
 
-            bool allConditionsMet = true;
-            foreach (string tag in quest.requiredTags)
+            bool questCompleted = true;
+
+            // AND logic: all tag requirements must be satisfied
+            foreach (TagRequirement req in quest.requiredTags)
             {
-                bool found = false;
+                int countFound = 0;
                 foreach (GameObject obj in objectsInPhoto)
                 {
-                    if (obj.CompareTag(tag))
-                    {
-                        found = true;
-                        break;
-                    }
+                    if (obj.CompareTag(req.tag))
+                        countFound++;
                 }
-                if (!found)
+
+                if (countFound < req.count)
                 {
-                    allConditionsMet = false;
+                    questCompleted = false; // requirement not met
                     break;
                 }
             }
 
-            if (allConditionsMet)
+            if (questCompleted)
             {
                 CompleteQuest(quest);
-                photoScore += quest.rewardPoints; // bonus Good Vibes pour quête complétée
+                photoScore += quest.rewardPoints;
             }
         }
-
-        Debug.Log("Photo Good Vibes score: " + photoScore + ", Total: " + goodVibesScore);
 
         return photoScore;
     }
@@ -95,13 +87,16 @@ public class QuestManager : MonoBehaviour
             GameManager.Instance.EndGame();
     }
 
-    // Détermine si le tag d'un objet est pertinent pour le scoring bonus
+    // Determines if a tag is relevant for scoring bonus
     public bool IsTagRelevant(string tag)
     {
         foreach (PhotoQuest quest in activeQuests)
         {
-            if (quest.requiredTags.Contains(tag))
-                return true;
+            foreach (TagRequirement req in quest.requiredTags)
+            {
+                if (req.tag == tag)
+                    return true;
+            }
         }
         return false;
     }

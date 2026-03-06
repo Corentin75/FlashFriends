@@ -10,16 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 847e8210e7f13484ca0bb353a14c6673, type: 3}
-  m_Name: PhotoQuest_3
+  m_Name: PhotoQuest_4
   m_EditorClassIdentifier: Assembly-CSharp::PhotoQuest
-  questTitle: Food Enthusiasts
-  description: Take a photo of 2 women and 1 man at the food stalls.
+  questTitle: Water Enjoyer
+  description: Take a photo of a man by the fountain.
   requiredTags:
-  - tag: Female
-    count: 2
   - tag: Male
     count: 1
-  - tag: FoodStall
+  - tag: Fountain
     count: 1
-  rewardPoints: 100
+  rewardPoints: 80
   completed: 1

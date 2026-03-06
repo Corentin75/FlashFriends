@@ -144,37 +144,38 @@ public class PlayerController : MonoBehaviour
 
     private void TakePhoto()
     {
-        Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
-        RaycastHit[] hits = Physics.SphereCastAll(ray, 0.5f, photoRange, photoLayer);
-
+        int photoScore = 0;
         HashSet<GameObject> objectsInPhoto = new HashSet<GameObject>();
 
-        foreach (var hit in hits)
+        Collider[] potentialObjects = Physics.OverlapSphere(playerCamera.transform.position, photoRange, photoLayer);
+
+        float maxAngle = 40f; // half-angle of the detection cone
+
+        foreach (var col in potentialObjects)
         {
-            GameObject obj = hit.collider.gameObject;
+            Vector3 toObject = col.transform.position - playerCamera.transform.position;
 
-            if (!objectsInPhoto.Contains(obj))
+            // Check if object is roughly in front
+            if (Vector3.Angle(playerCamera.transform.forward, toObject) <= maxAngle)
             {
-                objectsInPhoto.Add(obj);
+                if (!objectsInPhoto.Contains(col.gameObject))
+                {
+                    objectsInPhoto.Add(col.gameObject);
 
-                NPCController npc = obj.GetComponent<NPCController>();
-                if (npc != null)
-                    npc.OnPlayerPhotographed();
+                    NPCController npc = col.GetComponent<NPCController>();
+                    if (npc != null)
+                        npc.OnPlayerPhotographed();
+                }
             }
         }
 
-        int photoScore = 0;
-
-        // Capture la photo et passe le score pour la sauvegarde
+        // Capture the photo
         if (PhotoManager.Instance != null)
-        {
             PhotoManager.Instance.CapturePhoto(photoScore);
-        }
 
-        // Vérification quêtes + scoring
+        // Scoring
         if (QuestManager.Instance != null)
         {
-            // Retourne le score de cette photo
             photoScore = QuestManager.Instance.CheckPhotoAndReturnScore(new List<GameObject>(objectsInPhoto));
 
             if (GameManager.Instance.currentState == GameState.Playing)
@@ -184,6 +185,36 @@ public class PlayerController : MonoBehaviour
         }
 
         StartCoroutine(PhotoFlashEffect());
+    }
+
+    public float photoAngle = 40f; // half-angle of the cone
+
+    private void OnDrawGizmosSelected()
+    {
+        if (playerCamera == null)
+            return;
+
+        Gizmos.color = new Color(0, 1, 1, 0.25f); // cyan, semi-transparent
+
+        Vector3 origin = playerCamera.transform.position;
+        Vector3 forward = playerCamera.transform.forward;
+
+        // Draw multiple lines to form the cone
+        int segments = 20;
+        for (int i = 0; i <= segments; i++)
+        {
+            float theta = -photoAngle + (i / (float)segments) * 2f * photoAngle;
+            Vector3 dir = Quaternion.AngleAxis(theta, playerCamera.transform.up) * forward;
+            Gizmos.DrawLine(origin, origin + dir.normalized * photoRange);
+        }
+
+        // Optional: draw top/bottom lines for a more complete cone
+        for (int i = 0; i <= segments; i++)
+        {
+            float theta = -photoAngle + (i / (float)segments) * 2f * photoAngle;
+            Vector3 dir = Quaternion.AngleAxis(theta, playerCamera.transform.right) * forward;
+            Gizmos.DrawLine(origin, origin + dir.normalized * photoRange);
+        }
     }
 
     private IEnumerator PhotoFlashEffect()
