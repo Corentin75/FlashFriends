@@ -5,6 +5,7 @@ using System.Collections.Generic;
 public class PhotoQuest : ScriptableObject
 {
     public string questTitle;
+    [TextArea] public string description;
 
     // Chaque string est le tag qu'on doit trouver dans la photo
     public List<string> requiredTags = new List<string>();

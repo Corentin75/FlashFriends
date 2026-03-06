@@ -89,6 +89,10 @@ public class QuestManager : MonoBehaviour
         ParticleManager.Instance.SpawnParticles(ParticleManager.Instance.scoreParticles);
 
         Debug.Log("Quest completed: " + quest.questTitle);
+
+        // end game
+        if (activeQuests.Count == 0)
+            GameManager.Instance.EndGame();
     }
 
     // Détermine si le tag d'un objet est pertinent pour le scoring bonus

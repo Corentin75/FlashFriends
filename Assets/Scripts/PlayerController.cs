@@ -3,6 +3,7 @@ using UnityEngine.InputSystem;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 public class PlayerController : MonoBehaviour
 {
@@ -11,6 +12,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private InputActionReference lookAction;
     [SerializeField] private InputActionReference takePhotoAction;
     [SerializeField] private InputActionReference openAlbumAction;
+    [SerializeField] private InputActionReference openQuestsAction;
 
     [Header("Movement")]
     public float moveSpeed = 4f;
@@ -30,12 +32,14 @@ public class PlayerController : MonoBehaviour
     public RenderTexture photoRenderTexture;
     public float photoRange = 20f;
     public LayerMask photoLayer;
-    public Image flashImage;
+    public UnityEngine.UI.Image flashImage;
     public float flashDuration = 0.1f;
 
     private CharacterController controller;
     private float xRotation;
     private Animator animator;
+
+    public bool gameplayActive = false;
 
     private void Awake()
     {
@@ -51,6 +55,8 @@ public class PlayerController : MonoBehaviour
         takePhotoAction.action.performed += OnPhotoTaken;
         openAlbumAction.action.Enable();
         openAlbumAction.action.performed += OnToggleAlbum;
+        openQuestsAction.action.Enable();
+        openQuestsAction.action.performed += OnToggleQuest;
     }
 
     private void OnDisable()
@@ -61,12 +67,8 @@ public class PlayerController : MonoBehaviour
         takePhotoAction.action.Disable();
         openAlbumAction.action.performed -= OnToggleAlbum;
         openAlbumAction.action.Disable();
-    }
-
-    private void Start()
-    {
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        openQuestsAction.action.performed -= OnToggleQuest;
+        openQuestsAction.action.Disable();
     }
 
     private void Update()
@@ -78,6 +80,8 @@ public class PlayerController : MonoBehaviour
 
     public void SetGameplayActive(bool active)
     {
+        gameplayActive = active;
+
         if (active)
         {
             moveAction.action.Enable();
@@ -134,7 +138,8 @@ public class PlayerController : MonoBehaviour
 
     private void OnPhotoTaken(InputAction.CallbackContext context)
     {
-        TakePhoto();
+        if (gameplayActive)
+            TakePhoto();
     }
 
     private void TakePhoto()
@@ -160,17 +165,22 @@ public class PlayerController : MonoBehaviour
 
         int photoScore = 0;
 
+        // Capture la photo et passe le score pour la sauvegarde
+        if (PhotoManager.Instance != null)
+        {
+            PhotoManager.Instance.CapturePhoto(photoScore);
+        }
+
         // Vérification quêtes + scoring
         if (QuestManager.Instance != null)
         {
             // Retourne le score de cette photo
             photoScore = QuestManager.Instance.CheckPhotoAndReturnScore(new List<GameObject>(objectsInPhoto));
-        }
 
-        // Capture la photo et passe le score pour la sauvegarde
-        if (PhotoManager.Instance != null)
-        {
-            PhotoManager.Instance.CapturePhoto(photoScore);
+            if (GameManager.Instance.currentState == GameState.Playing)
+            {
+                PhotoFeedbackManager.Instance.ShowFeedback(photoScore);
+            }
         }
 
         StartCoroutine(PhotoFlashEffect());
@@ -186,7 +196,7 @@ public class PlayerController : MonoBehaviour
         // flash blanc instantané
         flashImage.color = new Color(1, 1, 1, 1);
 
-        yield return new WaitForSeconds(flashDuration);
+        yield return new WaitForSecondsRealtime(flashDuration);
 
         // fade out
         float fadeSpeed = 5f;
@@ -194,7 +204,7 @@ public class PlayerController : MonoBehaviour
         while (flashImage.color.a > 0)
         {
             Color c = flashImage.color;
-            c.a -= fadeSpeed * Time.deltaTime;
+            c.a -= fadeSpeed * Time.unscaledDeltaTime;
             flashImage.color = c;
             yield return null;
         }
@@ -206,9 +216,23 @@ public class PlayerController : MonoBehaviour
 
     private void OnToggleAlbum(InputAction.CallbackContext context)
     {
-        if (context.performed)
-        {
-            AlbumUIController.Instance.ToggleAlbum();
-        }
+        if (!context.performed)
+            return;
+
+        if (GameManager.Instance.currentState == GameState.Playing)
+            GameManager.Instance.OpenAlbum();
+        else if (GameManager.Instance.currentState == GameState.Album)
+            GameManager.Instance.CloseAlbum();
+    }
+
+    private void OnToggleQuest(InputAction.CallbackContext context)
+    {
+        if (!context.performed)
+            return;
+
+        if (GameManager.Instance.currentState == GameState.Playing)
+            GameManager.Instance.OpenQuestPanel();
+        else if (GameManager.Instance.currentState == GameState.Quest)
+            GameManager.Instance.CloseQuestPanel();
     }
 }
