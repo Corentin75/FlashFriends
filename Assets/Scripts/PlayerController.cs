@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
+using System.Collections.Generic;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
@@ -28,6 +30,8 @@ public class PlayerController : MonoBehaviour
     public RenderTexture photoRenderTexture;
     public float photoRange = 20f;
     public LayerMask photoLayer;
+    public Image flashImage;
+    public float flashDuration = 0.1f;
 
     private CharacterController controller;
     private float xRotation;
@@ -43,10 +47,8 @@ public class PlayerController : MonoBehaviour
     {
         moveAction.action.Enable();
         lookAction.action.Enable();
-
         takePhotoAction.action.Enable();
         takePhotoAction.action.performed += OnPhotoTaken;
-
         openAlbumAction.action.Enable();
         openAlbumAction.action.performed += OnToggleAlbum;
     }
@@ -55,10 +57,8 @@ public class PlayerController : MonoBehaviour
     {
         moveAction.action.Disable();
         lookAction.action.Disable();
-
         takePhotoAction.action.performed -= OnPhotoTaken;
         takePhotoAction.action.Disable();
-
         openAlbumAction.action.performed -= OnToggleAlbum;
         openAlbumAction.action.Disable();
     }
@@ -76,7 +76,6 @@ public class PlayerController : MonoBehaviour
         UpdateAnimation();
     }
 
-
     public void SetGameplayActive(bool active)
     {
         if (active)
@@ -93,8 +92,8 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    // ---------------- MOVEMENT ----------------
 
-    // ----- MOVEMENT -----
     private void HandleMovement()
     {
         Vector2 input = moveAction.action.ReadValue<Vector2>();
@@ -106,9 +105,7 @@ public class PlayerController : MonoBehaviour
         }
 
         velocity.y += gravity * Time.deltaTime;
-
-        Vector3 finalMove = move * moveSpeed + velocity;
-        controller.Move(finalMove * Time.deltaTime);
+        controller.Move((move * moveSpeed + velocity) * Time.deltaTime);
     }
 
     private void UpdateAnimation()
@@ -118,12 +115,11 @@ public class PlayerController : MonoBehaviour
         animator.SetBool("isWalking", isWalking);
     }
 
+    // ---------------- LOOK ----------------
 
-    // ----- LOOK -----
     private void HandleLook()
     {
         Vector2 look = lookAction.action.ReadValue<Vector2>();
-
         float mouseX = look.x * mouseSensitivity * Time.deltaTime;
         float mouseY = look.y * mouseSensitivity * Time.deltaTime;
 
@@ -134,8 +130,8 @@ public class PlayerController : MonoBehaviour
         transform.Rotate(Vector3.up * mouseX);
     }
 
+    // ---------------- PHOTO ----------------
 
-    // ----- PHOTO -----
     private void OnPhotoTaken(InputAction.CallbackContext context)
     {
         TakePhoto();
@@ -146,22 +142,68 @@ public class PlayerController : MonoBehaviour
         Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
         RaycastHit[] hits = Physics.SphereCastAll(ray, 0.5f, photoRange, photoLayer);
 
+        HashSet<GameObject> objectsInPhoto = new HashSet<GameObject>();
+
         foreach (var hit in hits)
         {
-            NPCController npc = hit.collider.GetComponent<NPCController>();
-            if (npc != null)
-                npc.OnPlayerPhotographed();
+            GameObject obj = hit.collider.gameObject;
+
+            if (!objectsInPhoto.Contains(obj))
+            {
+                objectsInPhoto.Add(obj);
+
+                NPCController npc = obj.GetComponent<NPCController>();
+                if (npc != null)
+                    npc.OnPlayerPhotographed();
+            }
         }
+
+        int photoScore = 0;
+
+        // Vérification quêtes + scoring
+        if (QuestManager.Instance != null)
+        {
+            // Retourne le score de cette photo
+            photoScore = QuestManager.Instance.CheckPhotoAndReturnScore(new List<GameObject>(objectsInPhoto));
+        }
+
+        // Capture la photo et passe le score pour la sauvegarde
+        if (PhotoManager.Instance != null)
+        {
+            PhotoManager.Instance.CapturePhoto(photoScore);
+        }
+
+        StartCoroutine(PhotoFlashEffect());
     }
 
     private IEnumerator PhotoFlashEffect()
     {
-        // TODO: effet cool de flash
-        yield return null;
+        if (flashImage == null)
+            yield break;
+
+        SoundManager.Instance.Play(SoundManager.Instance.photoSfx);
+
+        // flash blanc instantané
+        flashImage.color = new Color(1, 1, 1, 1);
+
+        yield return new WaitForSeconds(flashDuration);
+
+        // fade out
+        float fadeSpeed = 5f;
+
+        while (flashImage.color.a > 0)
+        {
+            Color c = flashImage.color;
+            c.a -= fadeSpeed * Time.deltaTime;
+            flashImage.color = c;
+            yield return null;
+        }
+
+        flashImage.color = new Color(1, 1, 1, 0);
     }
 
+    // ---------------- ALBUM ----------------
 
-    // ----- ALBUM -----
     private void OnToggleAlbum(InputAction.CallbackContext context)
     {
         if (context.performed)

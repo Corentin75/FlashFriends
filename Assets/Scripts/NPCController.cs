@@ -119,18 +119,22 @@ public class NPCController : MonoBehaviour
         {
             case 0: // Floss
                 animator.SetTrigger("FlossTrigger");
+                SoundManager.Instance.Play(SoundManager.Instance.flossDanceSfx);
                 break;
 
             case 1: // Hype dance
                 animator.SetTrigger("HypeTrigger");
+                SoundManager.Instance.Play(SoundManager.Instance.hypeDanceSfx);
                 break;
 
             case 2: // SelfCheck
                 animator.SetTrigger("SelfCheckTrigger");
+                SoundManager.Instance.Play(SoundManager.Instance.selfCheckSfx);
                 break;
 
             case 3: // Ignore
                 // rien, on continue la routine après
+                SoundManager.Instance.Play(SoundManager.Instance.ignoreSfx);
                 break;
         }
 
@@ -152,6 +156,20 @@ public class NPCController : MonoBehaviour
         animator.ResetTrigger("FlossTrigger");
         animator.ResetTrigger("HypeTrigger");
         animator.ResetTrigger("SelfCheckTrigger");
+    }
+
+    public int GetPoseScore()
+    {
+        if (animator.GetCurrentAnimatorStateInfo(0).IsName("StageDance"))
+            return 5;
+        if (animator.GetCurrentAnimatorStateInfo(0).IsName("SelfCheck"))
+            return 10;
+        if (animator.GetCurrentAnimatorStateInfo(0).IsName("FlossDance"))
+            return 20;
+        if (animator.GetCurrentAnimatorStateInfo(0).IsName("HypeDance"))
+            return 30;
+        // Idle ou autre
+        return 0;
     }
 
     // ---------------- POI BEHAVIOUR ----------------
