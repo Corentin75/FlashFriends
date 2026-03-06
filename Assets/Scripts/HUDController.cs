@@ -23,6 +23,7 @@ public class HUDController : MonoBehaviour
         UpdateHUD();
     }
 
+    // Updates score, photos taken, and quests left
     void UpdateHUD()
     {
         if (QuestManager.Instance == null)
@@ -31,18 +32,15 @@ public class HUDController : MonoBehaviour
         // Score
         scoreText.text = "Score: " + QuestManager.Instance.goodVibesScore;
 
-        // Photos
+        // Photos taken
         int photoCount = 0;
         if (Directory.Exists(photoFolder))
-        {
             photoCount = Directory.GetFiles(photoFolder, "*.png").Length;
-        }
 
         photoText.text = "Photos taken: " + photoCount;
 
-        // Quests
+        // Quests left
         int questCount = QuestManager.Instance.activeQuests.Count;
-
         questText.text = "Quests left: " + questCount;
     }
 }

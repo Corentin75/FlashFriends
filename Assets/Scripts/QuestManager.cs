@@ -10,30 +10,30 @@ public class QuestManager : MonoBehaviour
 
     public int goodVibesScore = 0;
 
-    void Awake()
+    private void Awake()
     {
         Instance = this;
 
-        // Réinitialise les quêtes à false au lancement
+        // Resets all quests at start
         foreach (PhotoQuest quest in activeQuests)
             quest.completed = false;
     }
 
+    // Checks a photo against all active quests and calculate score
     public int CheckPhotoAndReturnScore(List<GameObject> objectsInPhoto)
     {
         int photoScore = 0;
 
-        // Score from NPCs
+        // Adds NPC pose scores
         foreach (GameObject obj in objectsInPhoto)
         {
-            NPCController npc = obj.GetComponent<NPCController>();
-            if (npc != null)
+            if (obj.TryGetComponent<NPCController>(out NPCController npc))
                 photoScore += npc.GetPoseScore();
         }
 
         goodVibesScore += photoScore;
 
-        // Copy active quests to avoid modifying the list while iterating
+        // Copy to avoid modifying list while iterating
         List<PhotoQuest> questsCopy = new List<PhotoQuest>(activeQuests);
 
         foreach (PhotoQuest quest in questsCopy)
@@ -43,10 +43,11 @@ public class QuestManager : MonoBehaviour
 
             bool questCompleted = true;
 
-            // AND logic: all tag requirements must be satisfied
+            // All tag requirements must be satisfied
             foreach (TagRequirement req in quest.requiredTags)
             {
                 int countFound = 0;
+
                 foreach (GameObject obj in objectsInPhoto)
                 {
                     if (obj.CompareTag(req.tag))
@@ -55,7 +56,7 @@ public class QuestManager : MonoBehaviour
 
                 if (countFound < req.count)
                 {
-                    questCompleted = false; // requirement not met
+                    questCompleted = false;
                     break;
                 }
             }
@@ -70,7 +71,8 @@ public class QuestManager : MonoBehaviour
         return photoScore;
     }
 
-    void CompleteQuest(PhotoQuest quest)
+    // Marks quest as completed
+    private void CompleteQuest(PhotoQuest quest)
     {
         quest.completed = true;
         activeQuests.Remove(quest);
@@ -82,20 +84,19 @@ public class QuestManager : MonoBehaviour
 
         Debug.Log("Quest completed: " + quest.questTitle);
 
-        // end game
+        // Ends the game if there are no active quests left
         if (activeQuests.Count == 0)
             GameManager.Instance.EndGame();
     }
 
-    // Determines if a tag is relevant for scoring bonus
+    // Checks if a tag is relevant to any active quest
     public bool IsTagRelevant(string tag)
     {
         foreach (PhotoQuest quest in activeQuests)
         {
             foreach (TagRequirement req in quest.requiredTags)
             {
-                if (req.tag == tag)
-                    return true;
+                if (req.tag == tag) return true;
             }
         }
         return false;

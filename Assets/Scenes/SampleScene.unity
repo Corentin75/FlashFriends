@@ -19303,8 +19303,8 @@ MonoBehaviour:
   currentState: 0
   ui: {fileID: 1273348327}
   player: {fileID: 2134337566}
-  pauseAction: {fileID: 7412208197836551840, guid: 3d7a98b73acf08a4bbe4e689950d342a, type: 3}
   endGameUI: {fileID: 1273348328}
+  pauseAction: {fileID: 7412208197836551840, guid: 3d7a98b73acf08a4bbe4e689950d342a, type: 3}
 --- !u!1001 &405810190
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -27889,7 +27889,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.39215687}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -38169,10 +38169,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AlbumUIController
   albumPanel: {fileID: 375060750}
-  playerController: {fileID: 2134337566}
-  albumManager: {fileID: 1608969298}
-  fullPhotoDisplay: {fileID: 246848285}
   fullPhotoPanel: {fileID: 259049967}
+  fullPhotoDisplay: {fileID: 246848285}
+  albumManager: {fileID: 1608969298}
 --- !u!1001 &809381604
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -50750,8 +50749,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4278190080
+  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -51347,9 +51346,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: You were handed a total of 10 quests that you need to achieve! Take your
-    camera and go take pictures of people and the environment around them... But
-    more importantly, envoy the festival!
+  m_text: As a photographer, explore the festival, snap photos to complete quests
+    and earn as much score as you can get! Some people will even pose, so capture
+    your best shots and fill your album!
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 9a1783f3d4a110740beb039e411602db, type: 2}
   m_sharedMaterial: {fileID: 1358257069484684608, guid: 9a1783f3d4a110740beb039e411602db, type: 2}
@@ -51358,8 +51357,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4278190080
+  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -69180,7 +69179,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1612031974
 RectTransform:
   m_ObjectHideFlags: 0
@@ -91701,8 +91700,8 @@ MonoBehaviour:
     m_Bits: 128
   flashImage: {fileID: 1379845002}
   flashDuration: 0.15
-  gameplayActive: 0
   photoAngle: 20
+  gameplayActive: 0
 --- !u!1001 &2136467255
 PrefabInstance:
   m_ObjectHideFlags: 0

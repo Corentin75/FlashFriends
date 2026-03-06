@@ -2,8 +2,6 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.UI;
-using UnityEngine.UIElements;
 
 public class PlayerController : MonoBehaviour
 {
@@ -25,6 +23,7 @@ public class PlayerController : MonoBehaviour
     public Transform cameraPivot;
     public float minPitch = -80f;
     public float maxPitch = 80f;
+    private float xRotation;
 
     [Header("Photo Settings")]
     public Camera playerCamera;
@@ -34,9 +33,9 @@ public class PlayerController : MonoBehaviour
     public LayerMask photoLayer;
     public UnityEngine.UI.Image flashImage;
     public float flashDuration = 0.1f;
+    public float photoAngle = 40f; // half-angle of detection cone
 
     private CharacterController controller;
-    private float xRotation;
     private Animator animator;
 
     public bool gameplayActive = false;
@@ -51,33 +50,31 @@ public class PlayerController : MonoBehaviour
     {
         moveAction.action.Enable();
         lookAction.action.Enable();
+
         takePhotoAction.action.Enable();
         takePhotoAction.action.performed += OnPhotoTaken;
+
         openAlbumAction.action.Enable();
         openAlbumAction.action.performed += OnToggleAlbum;
+
         openQuestsAction.action.Enable();
         openQuestsAction.action.performed += OnToggleQuest;
     }
 
     private void OnDisable()
     {
+        takePhotoAction.action.performed -= OnPhotoTaken;
+        openAlbumAction.action.performed -= OnToggleAlbum;
+        openQuestsAction.action.performed -= OnToggleQuest;
+
         moveAction.action.Disable();
         lookAction.action.Disable();
-        takePhotoAction.action.performed -= OnPhotoTaken;
         takePhotoAction.action.Disable();
-        openAlbumAction.action.performed -= OnToggleAlbum;
         openAlbumAction.action.Disable();
-        openQuestsAction.action.performed -= OnToggleQuest;
         openQuestsAction.action.Disable();
     }
 
-    private void Update()
-    {
-        HandleMovement();
-        HandleLook();
-        UpdateAnimation();
-    }
-
+    // ---------------- GAMEPLAY STATE ----------------
     public void SetGameplayActive(bool active)
     {
         gameplayActive = active;
@@ -96,17 +93,21 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    // ---------------- MOVEMENT ----------------
+    private void Update()
+    {
+        HandleMovement();
+        HandleLook();
+        UpdateAnimation();
+    }
 
+    // ---------------- MOVEMENT ----------------
     private void HandleMovement()
     {
         Vector2 input = moveAction.action.ReadValue<Vector2>();
         Vector3 move = transform.forward * input.y + transform.right * input.x;
 
         if (controller.isGrounded && velocity.y < 0)
-        {
             velocity.y = groundStickForce;
-        }
 
         velocity.y += gravity * Time.deltaTime;
         controller.Move((move * moveSpeed + velocity) * Time.deltaTime);
@@ -120,7 +121,6 @@ public class PlayerController : MonoBehaviour
     }
 
     // ---------------- LOOK ----------------
-
     private void HandleLook()
     {
         Vector2 look = lookAction.action.ReadValue<Vector2>();
@@ -135,7 +135,6 @@ public class PlayerController : MonoBehaviour
     }
 
     // ---------------- PHOTO ----------------
-
     private void OnPhotoTaken(InputAction.CallbackContext context)
     {
         if (gameplayActive)
@@ -148,14 +147,12 @@ public class PlayerController : MonoBehaviour
         HashSet<GameObject> objectsInPhoto = new HashSet<GameObject>();
 
         Collider[] potentialObjects = Physics.OverlapSphere(playerCamera.transform.position, photoRange, photoLayer);
-
-        float maxAngle = 40f; // half-angle of the detection cone
+        float maxAngle = photoAngle;
 
         foreach (var col in potentialObjects)
         {
             Vector3 toObject = col.transform.position - playerCamera.transform.position;
 
-            // Check if object is roughly in front
             if (Vector3.Angle(playerCamera.transform.forward, toObject) <= maxAngle)
             {
                 if (!objectsInPhoto.Contains(col.gameObject))
@@ -169,70 +166,33 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        // Capture the photo
-        if (PhotoManager.Instance != null)
-            PhotoManager.Instance.CapturePhoto(photoScore);
+        // Captures photo
+        PhotoManager.Instance?.CapturePhoto(photoScore);
 
-        // Scoring
+        // Calculates score
         if (QuestManager.Instance != null)
         {
             photoScore = QuestManager.Instance.CheckPhotoAndReturnScore(new List<GameObject>(objectsInPhoto));
 
             if (GameManager.Instance.currentState == GameState.Playing)
-            {
                 PhotoFeedbackManager.Instance.ShowFeedback(photoScore);
-            }
         }
 
         StartCoroutine(PhotoFlashEffect());
     }
 
-    public float photoAngle = 40f; // half-angle of the cone
-
-    private void OnDrawGizmosSelected()
-    {
-        if (playerCamera == null)
-            return;
-
-        Gizmos.color = new Color(0, 1, 1, 0.25f); // cyan, semi-transparent
-
-        Vector3 origin = playerCamera.transform.position;
-        Vector3 forward = playerCamera.transform.forward;
-
-        // Draw multiple lines to form the cone
-        int segments = 20;
-        for (int i = 0; i <= segments; i++)
-        {
-            float theta = -photoAngle + (i / (float)segments) * 2f * photoAngle;
-            Vector3 dir = Quaternion.AngleAxis(theta, playerCamera.transform.up) * forward;
-            Gizmos.DrawLine(origin, origin + dir.normalized * photoRange);
-        }
-
-        // Optional: draw top/bottom lines for a more complete cone
-        for (int i = 0; i <= segments; i++)
-        {
-            float theta = -photoAngle + (i / (float)segments) * 2f * photoAngle;
-            Vector3 dir = Quaternion.AngleAxis(theta, playerCamera.transform.right) * forward;
-            Gizmos.DrawLine(origin, origin + dir.normalized * photoRange);
-        }
-    }
-
+    // ---------------- PHOTO FLASH ----------------
     private IEnumerator PhotoFlashEffect()
     {
-        if (flashImage == null)
-            yield break;
+        if (flashImage == null) yield break;
 
         SoundManager.Instance.Play(SoundManager.Instance.photoSfx);
 
-        // flash blanc instantané
         flashImage.color = new Color(1, 1, 1, 1);
-
         yield return new WaitForSecondsRealtime(flashDuration);
 
-        // fade out
         float fadeSpeed = 5f;
-
-        while (flashImage.color.a > 0)
+        while (flashImage.color.a > 0f)
         {
             Color c = flashImage.color;
             c.a -= fadeSpeed * Time.unscaledDeltaTime;
@@ -244,11 +204,9 @@ public class PlayerController : MonoBehaviour
     }
 
     // ---------------- ALBUM ----------------
-
     private void OnToggleAlbum(InputAction.CallbackContext context)
     {
-        if (!context.performed)
-            return;
+        if (!context.performed) return;
 
         if (GameManager.Instance.currentState == GameState.Playing)
             GameManager.Instance.OpenAlbum();
@@ -256,14 +214,35 @@ public class PlayerController : MonoBehaviour
             GameManager.Instance.CloseAlbum();
     }
 
+    // ---------------- QUEST PANEL ----------------
     private void OnToggleQuest(InputAction.CallbackContext context)
     {
-        if (!context.performed)
-            return;
+        if (!context.performed) return;
 
         if (GameManager.Instance.currentState == GameState.Playing)
             GameManager.Instance.OpenQuestPanel();
         else if (GameManager.Instance.currentState == GameState.Quest)
             GameManager.Instance.CloseQuestPanel();
+    }
+
+    // ---------------- DEBUG ----------------
+    private void OnDrawGizmosSelected()
+    {
+        if (playerCamera == null) return;
+
+        Gizmos.color = new Color(0, 1, 1, 0.25f);
+        Vector3 origin = playerCamera.transform.position;
+        Vector3 forward = playerCamera.transform.forward;
+
+        int segments = 20;
+        for (int i = 0; i <= segments; i++)
+        {
+            float theta = -photoAngle + (i / (float)segments) * 2f * photoAngle;
+            Vector3 dir = Quaternion.AngleAxis(theta, playerCamera.transform.up) * forward;
+            Gizmos.DrawLine(origin, origin + dir.normalized * photoRange);
+
+            dir = Quaternion.AngleAxis(theta, playerCamera.transform.right) * forward;
+            Gizmos.DrawLine(origin, origin + dir.normalized * photoRange);
+        }
     }
 }

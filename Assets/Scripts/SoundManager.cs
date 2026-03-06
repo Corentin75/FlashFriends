@@ -16,7 +16,7 @@ public class SoundManager : MonoBehaviour
 
     private void Awake()
     {
-        // singleton pattern
+        // Singleton pattern
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
@@ -25,13 +25,16 @@ public class SoundManager : MonoBehaviour
         Instance = this;
     }
 
+    // Plays a sound effect
     public void Play(AudioClip clip)
     {
-        sfxSource.PlayOneShot(clip);
+        if (clip != null && sfxSource != null)
+            sfxSource.PlayOneShot(clip);
     }
 
+    // Stops all current SFX
     public void Stop()
     {
-        sfxSource.Stop();
+        sfxSource?.Stop();
     }
 }
