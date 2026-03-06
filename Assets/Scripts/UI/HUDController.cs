@@ -26,9 +26,6 @@ public class HUDController : MonoBehaviour
     // Updates score, photos taken, and quests left
     void UpdateHUD()
     {
-        if (QuestManager.Instance == null)
-            return;
-
         // Score
         scoreText.text = "Score: " + QuestManager.Instance.goodVibesScore;
 

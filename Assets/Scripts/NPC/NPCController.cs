@@ -163,7 +163,7 @@ public class NPCController : MonoBehaviour
     // ---------------- POI BEHAVIOUR ----------------
     private void HandlePOIBehaviour(bool entering)
     {
-        if (animator == null || currentTarget == null) return;
+        if (currentTarget == null) return;
 
         if (currentTarget.type == POI.POIType.Stage)
         {
@@ -176,8 +176,6 @@ public class NPCController : MonoBehaviour
     // ---------------- ANIMATION ----------------
     private void UpdateAnimation()
     {
-        if (animator == null) return;
-
         if (isReacting)
         {
             animator.SetFloat("Speed", 0f); // freeze during reaction
