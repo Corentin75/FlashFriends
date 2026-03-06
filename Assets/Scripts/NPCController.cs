@@ -5,14 +5,14 @@ using System.Collections;
 public class NPCController : MonoBehaviour
 {
     [Header("Routine")]
-    public POI[] routine;
+    public POI[] routine; // NPCs points of interest
 
     [Header("Player Detection")]
     public Camera playerCamera;
     public float detectionDistance = 20f;
 
     [Header("Reaction Settings")]
-    public float reactionDuration = 5f; // durée fixe pour toutes les réactions
+    public float reactionDuration = 5f; // time for each reaction
     public float fleeDistance = 5f;
     public float normalSpeed = 3.5f;
     public float fleeSpeed = 7f;
@@ -26,7 +26,7 @@ public class NPCController : MonoBehaviour
     private bool isReacting = false;
     private Coroutine routineCoroutine;
 
-    void Awake()
+    private void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
         animator = GetComponent<Animator>();
@@ -35,19 +35,20 @@ public class NPCController : MonoBehaviour
         agent.speed = normalSpeed;
     }
 
-    void Start()
+    private void Start()
     {
         if (routine.Length > 0)
             routineCoroutine = StartCoroutine(FollowRoutine());
     }
 
-    void Update()
+    private void Update()
     {
         UpdateAnimation();
     }
 
     // ---------------- ROUTINE ----------------
-    IEnumerator FollowRoutine()
+    // NPC follows the assigned routine (POIs)
+    private IEnumerator FollowRoutine()
     {
         while (true)
         {
@@ -55,41 +56,35 @@ public class NPCController : MonoBehaviour
                 yield break;
 
             currentTarget = routine[currentPOI];
-
             Vector3 destination = currentTarget.GetRandomPoint();
+
             agent.isStopped = false;
             agent.SetDestination(destination);
 
-            // attendre que le chemin soit calculé
+            // Waits until path is calculated
             while (agent.pathPending)
                 yield return null;
 
-            // attendre que le PNJ arrive réellement
+            // Waits until NPC reaches destination
             while (agent.remainingDistance > agent.stoppingDistance || agent.velocity.sqrMagnitude > 0.01f)
             {
                 if (isReacting) yield return null;
                 yield return null;
             }
 
-            // PNJ arrivé → appliquer comportement POI
             HandlePOIBehaviour(true);
 
-            float waitTime = currentTarget.waitTime;
             float timer = 0f;
-
-            while (timer < waitTime)
+            while (timer < currentTarget.waitTime)
             {
                 if (isReacting) yield return null;
-
                 timer += Time.deltaTime;
                 yield return null;
             }
 
             HandlePOIBehaviour(false);
 
-            currentPOI++;
-            if (currentPOI >= routine.Length)
-                currentPOI = 0;
+            currentPOI = (currentPOI + 1) % routine.Length; // loop routine
         }
     }
 
@@ -100,50 +95,44 @@ public class NPCController : MonoBehaviour
             StartCoroutine(ReactToPhoto());
     }
 
-    IEnumerator ReactToPhoto()
+    private IEnumerator ReactToPhoto()
     {
         isReacting = true;
 
         if (routineCoroutine != null)
             StopCoroutine(routineCoroutine);
 
-        // Stop complet du NavMeshAgent pendant la réaction
         agent.isStopped = true;
         agent.ResetPath();
 
         ResetReactionTriggers();
 
-        int reaction = Random.Range(0, 4); // 0=Floss,1=Hype,2=SelfCheck,3=Ignore
-
+        // Chooses a random reaction
+        int reaction = Random.Range(0, 4); // 0=Floss, 1=Hype, 2=SelfCheck, 3=Ignore
         switch (reaction)
         {
-            case 0: // Floss
+            case 0:
                 animator.SetTrigger("FlossTrigger");
                 SoundManager.Instance.Play(SoundManager.Instance.flossDanceSfx);
                 break;
-
-            case 1: // Hype dance
+            case 1:
                 animator.SetTrigger("HypeTrigger");
                 SoundManager.Instance.Play(SoundManager.Instance.hypeDanceSfx);
                 break;
-
-            case 2: // SelfCheck
+            case 2:
                 animator.SetTrigger("SelfCheckTrigger");
                 SoundManager.Instance.Play(SoundManager.Instance.selfCheckSfx);
                 break;
-
-            case 3: // Ignore
-                // rien, on continue la routine après
+            case 3:
                 SoundManager.Instance.Play(SoundManager.Instance.ignoreSfx);
                 break;
         }
 
-        // attendre la durée fixe
         yield return new WaitForSeconds(reactionDuration);
 
         ResetReactionTriggers();
 
-        // reprendre la routine
+        // Resumes routine
         agent.speed = normalSpeed;
         agent.isStopped = false;
         isReacting = false;
@@ -151,53 +140,50 @@ public class NPCController : MonoBehaviour
         routineCoroutine = StartCoroutine(FollowRoutine());
     }
 
-    void ResetReactionTriggers()
+    private void ResetReactionTriggers()
     {
         animator.ResetTrigger("FlossTrigger");
         animator.ResetTrigger("HypeTrigger");
         animator.ResetTrigger("SelfCheckTrigger");
     }
 
+    // ---------------- SCORING ----------------
     public int GetPoseScore()
     {
-        if (animator.GetCurrentAnimatorStateInfo(0).IsName("StageDance"))
-            return 5;
-        if (animator.GetCurrentAnimatorStateInfo(0).IsName("SelfCheck"))
-            return 10;
-        if (animator.GetCurrentAnimatorStateInfo(0).IsName("FlossDance"))
-            return 20;
-        if (animator.GetCurrentAnimatorStateInfo(0).IsName("HypeDance"))
-            return 30;
-        // Idle ou autre
-        return 0;
+        var state = animator.GetCurrentAnimatorStateInfo(0);
+
+        if (state.IsName("StageDance")) return 5;
+        if (state.IsName("SelfCheck")) return 10;
+        if (state.IsName("FlossDance")) return 20;
+        if (state.IsName("HypeDance")) return 30;
+
+        return 0; // idle or ignore
     }
 
     // ---------------- POI BEHAVIOUR ----------------
-    void HandlePOIBehaviour(bool entering)
+    private void HandlePOIBehaviour(bool entering)
     {
         if (animator == null || currentTarget == null) return;
 
         if (currentTarget.type == POI.POIType.Stage)
         {
-            if (entering) transform.LookAt(currentTarget.transform); // regarder la scène
+            if (entering) transform.LookAt(currentTarget.transform);
             animator.SetBool("isDancing", entering);
             agent.isStopped = entering;
         }
     }
 
     // ---------------- ANIMATION ----------------
-    void UpdateAnimation()
+    private void UpdateAnimation()
     {
         if (animator == null) return;
 
         if (isReacting)
         {
-            // Stop complet pendant la réaction (Floss / SelfCheck)
-            animator.SetFloat("Speed", 0f);
+            animator.SetFloat("Speed", 0f); // freeze during reaction
         }
         else
         {
-            // vitesse normale (Idle/Walk)
             float speed = (!agent.isStopped && agent.hasPath) ? agent.desiredVelocity.magnitude : 0f;
             animator.SetFloat("Speed", speed);
         }

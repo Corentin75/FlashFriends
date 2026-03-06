@@ -3,13 +3,15 @@ using UnityEngine.UI;
 using System.IO;
 using System.Collections.Generic;
 
+
+// Handles the photo album: loads PNGs from disk, displays them in pages, handles navigation...
 public class AlbumManager : MonoBehaviour
 {
-    [Header("Page Left")]
+    [Header("Left Page Slots")]
     public RawImage pageLeftSlot1;
     public RawImage pageLeftSlot2;
 
-    [Header("Page Right")]
+    [Header("Right Page Slots")]
     public RawImage pageRightSlot1;
     public RawImage pageRightSlot2;
 
@@ -18,19 +20,19 @@ public class AlbumManager : MonoBehaviour
     public Button prevButton;
 
     private List<string> photoPaths = new List<string>();
-
     private int currentPage = 0;
-    private int photosPerSpread = 4;
+    private const int photosPerSpread = 4;
 
     private string folderPath;
 
     private void Start()
     {
-        folderPath = Application.persistentDataPath + "/Photos";
+        folderPath = Path.Combine(Application.persistentDataPath, "Photos");
         LoadAllPhotoPaths();
         DisplayCurrentPage();
     }
 
+    // Reloads all PNG paths from the Photos folder
     public void RefreshAlbum()
     {
         LoadAllPhotoPaths();
@@ -38,16 +40,13 @@ public class AlbumManager : MonoBehaviour
         DisplayCurrentPage();
     }
 
-    void LoadAllPhotoPaths()
+    private void LoadAllPhotoPaths()
     {
         if (!Directory.Exists(folderPath))
             return;
 
-        string[] files = Directory.GetFiles(folderPath, "*.png");
-
-        photoPaths = new List<string>(files);
-
-        photoPaths.Sort(); // tri par nom (timestamp)
+        photoPaths = new List<string>(Directory.GetFiles(folderPath, "*.png"));
+        photoPaths.Sort(); // sort by filename (= timestamp)
     }
 
     public void NextPage()
@@ -68,11 +67,12 @@ public class AlbumManager : MonoBehaviour
         }
     }
 
-    void DisplayCurrentPage()
+    private void DisplayCurrentPage()
     {
         int startIndex = currentPage * photosPerSpread;
 
-        PhotoSlot[] slots = new PhotoSlot[] {
+        PhotoSlot[] slots = new PhotoSlot[]
+        {
             pageLeftSlot1.GetComponent<PhotoSlot>(),
             pageLeftSlot2.GetComponent<PhotoSlot>(),
             pageRightSlot1.GetComponent<PhotoSlot>(),
@@ -84,9 +84,7 @@ public class AlbumManager : MonoBehaviour
             int photoIndex = startIndex + i;
             if (photoIndex < photoPaths.Count)
             {
-                byte[] fileData = File.ReadAllBytes(photoPaths[photoIndex]);
-                Texture2D tex = new Texture2D(2, 2);
-                tex.LoadImage(fileData);
+                Texture2D tex = LoadTexture(photoPaths[photoIndex]);
 
                 slots[i].Setup(tex, (clickedTex) =>
                 {
@@ -104,10 +102,18 @@ public class AlbumManager : MonoBehaviour
         UpdateButtons();
     }
 
-    void UpdateButtons()
+    // Loads a PNG from the disk into a Texture2D
+    private Texture2D LoadTexture(string path)
+    {
+        byte[] fileData = File.ReadAllBytes(path);
+        Texture2D tex = new Texture2D(2, 2);
+        tex.LoadImage(fileData);
+        return tex;
+    }
+
+    private void UpdateButtons()
     {
         prevButton.interactable = currentPage > 0;
-        nextButton.interactable =
-            (currentPage + 1) * photosPerSpread < photoPaths.Count;
+        nextButton.interactable = (currentPage + 1) * photosPerSpread < photoPaths.Count;
     }
 }

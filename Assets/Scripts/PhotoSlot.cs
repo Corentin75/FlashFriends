@@ -8,10 +8,12 @@ public class PhotoSlot : MonoBehaviour
 
     private Texture2D photoTexture;
 
+    // Setups the photo slot with the texture and click callback
     public void Setup(Texture2D tex, System.Action<Texture2D> onClick)
     {
         photoTexture = tex;
         rawImage.texture = tex;
+
         button.onClick.RemoveAllListeners();
         button.onClick.AddListener(() => onClick(photoTexture));
     }

@@ -8273,7 +8273,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 447436e76eaf8f84d95c10268a39aeae, type: 3}
       propertyPath: m_Layer
-      value: 8
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 447436e76eaf8f84d95c10268a39aeae, type: 3}
+      propertyPath: m_TagString
+      value: MainGate
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -19299,8 +19303,8 @@ MonoBehaviour:
   currentState: 0
   ui: {fileID: 1273348327}
   player: {fileID: 2134337566}
-  pauseAction: {fileID: 7412208197836551840, guid: 3d7a98b73acf08a4bbe4e689950d342a, type: 3}
   endGameUI: {fileID: 1273348328}
+  pauseAction: {fileID: 7412208197836551840, guid: 3d7a98b73acf08a4bbe4e689950d342a, type: 3}
 --- !u!1001 &405810190
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -21415,15 +21419,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 8b3e76edb2e3f6b4f89c0505de04264f, type: 3}
       propertyPath: m_Layer
-      value: 8
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 8b3e76edb2e3f6b4f89c0505de04264f, type: 3}
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 8b3e76edb2e3f6b4f89c0505de04264f, type: 3}
+      propertyPath: m_TagString
+      value: Fountain
+      objectReference: {fileID: 0}
     - target: {fileID: 8164078558771037576, guid: 8b3e76edb2e3f6b4f89c0505de04264f, type: 3}
       propertyPath: m_Layer
-      value: 8
+      value: 7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -24476,11 +24484,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 80ea93e06463f834fa8a4bf56fd6cf68, type: 3}
       propertyPath: m_Layer
-      value: 8
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 80ea93e06463f834fa8a4bf56fd6cf68, type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 80ea93e06463f834fa8a4bf56fd6cf68, type: 3}
+      propertyPath: m_TagString
+      value: Stage
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -27877,7 +27889,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.39215687}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -38157,10 +38169,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AlbumUIController
   albumPanel: {fileID: 375060750}
-  playerController: {fileID: 2134337566}
-  albumManager: {fileID: 1608969298}
-  fullPhotoDisplay: {fileID: 246848285}
   fullPhotoPanel: {fileID: 259049967}
+  fullPhotoDisplay: {fileID: 246848285}
+  albumManager: {fileID: 1608969298}
 --- !u!1001 &809381604
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -38885,7 +38896,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: d3cc9508af21bf744858f8ccebe5d246, type: 3}
       propertyPath: m_Layer
-      value: 8
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: d3cc9508af21bf744858f8ccebe5d246, type: 3}
+      propertyPath: m_TagString
+      value: IsolatedToilets
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -48663,7 +48678,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 843cb21fbe720584fad383eb9a7c1bf6, type: 3}
       propertyPath: m_Layer
-      value: 8
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 843cb21fbe720584fad383eb9a7c1bf6, type: 3}
+      propertyPath: m_TagString
+      value: FoodStall
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -50730,8 +50749,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4278190080
+  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -51327,9 +51346,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: You were handed a total of 10 quests that you need to achieve! Take your
-    camera and go take pictures of people and the environment around them... But
-    more importantly, envoy the festival!
+  m_text: As a photographer, explore the festival, snap photos to complete quests
+    and earn as much score as you can get! Some people will even pose, so capture
+    your best shots and fill your album!
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 9a1783f3d4a110740beb039e411602db, type: 2}
   m_sharedMaterial: {fileID: 1358257069484684608, guid: 9a1783f3d4a110740beb039e411602db, type: 2}
@@ -51338,8 +51357,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4278190080
+  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -66960,7 +66979,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::QuestManager
   activeQuests:
   - {fileID: 11400000, guid: 15168f9d7da830f4d8f1665184aa0e7e, type: 2}
-  - {fileID: 11400000, guid: 5b82ea89462f5c64eb0c8b24cc05e28f, type: 2}
+  - {fileID: 11400000, guid: 0779759c63151a14d9e287d081f8a474, type: 2}
+  - {fileID: 11400000, guid: 60ab5e5b497ab9e4da1da9cadca25aab, type: 2}
+  - {fileID: 11400000, guid: ea45e210b0e7f9b4fb58c7e6ce84f8bd, type: 2}
+  - {fileID: 11400000, guid: 3042b20f6cc5e2549a49e89b292f0a8f, type: 2}
+  - {fileID: 11400000, guid: 82f3790562c6f4343abe58bd5e07050e, type: 2}
+  - {fileID: 11400000, guid: 0a394d79921fbdb4fbe653d493f8af5c, type: 2}
+  - {fileID: 11400000, guid: cd25a63dfc9e75241914f637a6e22393, type: 2}
   completedQuests: []
   goodVibesScore: 0
 --- !u!1001 &1569794084
@@ -69154,7 +69179,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1612031974
 RectTransform:
   m_ObjectHideFlags: 0
@@ -81437,7 +81462,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 100000, guid: 31bbda51eeab02f44a8e92a7da2f5ff8, type: 3}
       propertyPath: m_Layer
-      value: 8
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: 31bbda51eeab02f44a8e92a7da2f5ff8, type: 3}
+      propertyPath: m_TagString
+      value: Bug
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 31bbda51eeab02f44a8e92a7da2f5ff8, type: 3}
       propertyPath: m_LocalPosition.x
@@ -81445,7 +81474,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 31bbda51eeab02f44a8e92a7da2f5ff8, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 31bbda51eeab02f44a8e92a7da2f5ff8, type: 3}
       propertyPath: m_LocalPosition.z
@@ -81453,19 +81482,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 31bbda51eeab02f44a8e92a7da2f5ff8, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 31bbda51eeab02f44a8e92a7da2f5ff8, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.000000021855694
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 31bbda51eeab02f44a8e92a7da2f5ff8, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 31bbda51eeab02f44a8e92a7da2f5ff8, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 31bbda51eeab02f44a8e92a7da2f5ff8, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -81477,7 +81506,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 31bbda51eeab02f44a8e92a7da2f5ff8, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
+      value: 180
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -91665,12 +91694,13 @@ MonoBehaviour:
   playerCamera: {fileID: 330585545}
   photoCamera: {fileID: 1195559314}
   photoRenderTexture: {fileID: 8400000, guid: a49f05e14402b88408b7c523134cfcb3, type: 2}
-  photoRange: 5
+  photoRange: 15
   photoLayer:
     serializedVersion: 2
     m_Bits: 128
   flashImage: {fileID: 1379845002}
   flashDuration: 0.15
+  photoAngle: 20
   gameplayActive: 0
 --- !u!1001 &2136467255
 PrefabInstance:

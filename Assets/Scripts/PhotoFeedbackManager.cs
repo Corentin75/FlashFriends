@@ -13,11 +13,12 @@ public class PhotoFeedbackManager : MonoBehaviour
 
     private Coroutine routine;
 
-    void Awake()
+    private void Awake()
     {
         Instance = this;
     }
 
+    // Shows feedback after taking a photo
     public void ShowFeedback(int score)
     {
         string comment = GetComment(score);
@@ -28,7 +29,8 @@ public class PhotoFeedbackManager : MonoBehaviour
         routine = StartCoroutine(FeedbackRoutine(score, comment));
     }
 
-    string GetComment(int score)
+    // Determines a comment based on score
+    private string GetComment(int score)
     {
         if (score <= 0) return "Meh...";
         if (score < 20) return "Not bad!";
@@ -38,19 +40,20 @@ public class PhotoFeedbackManager : MonoBehaviour
         return "MASTERPIECE!";
     }
 
-    IEnumerator FeedbackRoutine(int score, string comment)
+    // Coroutine to display and fade the feedback
+    private IEnumerator FeedbackRoutine(int score, string comment)
     {
         scoreText.text = "+" + score + " score";
         commentText.text = comment;
 
-        SetAlpha(scoreText, 1);
-        SetAlpha(commentText, 1);
+        SetAlpha(scoreText, 1f);
+        SetAlpha(commentText, 1f);
 
         yield return new WaitForSeconds(displayTime);
 
         float fadeSpeed = 2f;
 
-        while (scoreText.color.a > 0)
+        while (scoreText.color.a > 0f)
         {
             Fade(scoreText, fadeSpeed);
             Fade(commentText, fadeSpeed);
@@ -58,14 +61,14 @@ public class PhotoFeedbackManager : MonoBehaviour
         }
     }
 
-    void Fade(TextMeshProUGUI text, float speed)
+    private void Fade(TextMeshProUGUI text, float speed)
     {
         Color c = text.color;
         c.a -= speed * Time.deltaTime;
         text.color = c;
     }
 
-    void SetAlpha(TextMeshProUGUI text, float alpha)
+    private void SetAlpha(TextMeshProUGUI text, float alpha)
     {
         Color c = text.color;
         c.a = alpha;

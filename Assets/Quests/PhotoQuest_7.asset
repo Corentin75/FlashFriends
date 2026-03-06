@@ -10,16 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 847e8210e7f13484ca0bb353a14c6673, type: 3}
-  m_Name: PhotoQuest_3
+  m_Name: PhotoQuest_7
   m_EditorClassIdentifier: Assembly-CSharp::PhotoQuest
-  questTitle: Food Enthusiasts
-  description: Take a photo of 2 women and 1 man at the food stalls.
+  questTitle: What The...
+  description: Take a picture of the weird-looking tree.
   requiredTags:
-  - tag: Female
-    count: 2
-  - tag: Male
-    count: 1
-  - tag: FoodStall
+  - tag: Bug
     count: 1
   rewardPoints: 100
-  completed: 1
+  completed: 0

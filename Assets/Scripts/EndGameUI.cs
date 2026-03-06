@@ -7,8 +7,12 @@ public class EndGameUI : MonoBehaviour
     public TextMeshProUGUI questsText;
     public TextMeshProUGUI photosText;
 
+    // Updates the endgame stats
     public void UpdateStats()
     {
+        if (QuestManager.Instance == null || PhotoManager.Instance == null)
+            return;
+
         int score = QuestManager.Instance.goodVibesScore;
         int quests = QuestManager.Instance.completedQuests.Count;
         int photos = PhotoManager.Instance.totalPhotosTaken;

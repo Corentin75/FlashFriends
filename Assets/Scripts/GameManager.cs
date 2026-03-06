@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.InputSystem;
 
-
+// Different game states
 public enum GameState
 {
     StartMenu,
@@ -13,7 +13,6 @@ public enum GameState
     End
 }
 
-
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
@@ -23,21 +22,19 @@ public class GameManager : MonoBehaviour
     [Header("References")]
     public UIManager ui;
     public PlayerController player;
+    public EndGameUI endGameUI;
 
     [Header("Input")]
     public InputActionReference pauseAction;
 
-    public EndGameUI endGameUI;
-
     private void Awake()
     {
-        if (Instance == null)
-            Instance = this;
-        else
-            Destroy(gameObject);
+        // Singleton pattern
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
 
+        // Initializes game in the Start Menu
         Time.timeScale = 0f;
-
         currentState = GameState.StartMenu;
         player.SetGameplayActive(false);
 
@@ -64,13 +61,11 @@ public class GameManager : MonoBehaviour
 
     private void OnPausePressed(InputAction.CallbackContext context)
     {
-        if (currentState == GameState.Playing)
-            PauseGame();
-        else if (currentState == GameState.Paused)
-            ResumeGame();
+        if (currentState == GameState.Playing) PauseGame();
+        else if (currentState == GameState.Paused) ResumeGame();
     }
 
-    // -------- GAME FLOW --------
+    // ---------------- GAME FLOW ----------------
 
     public void StartGame()
     {
@@ -129,17 +124,17 @@ public class GameManager : MonoBehaviour
         endGameUI.UpdateStats();
     }
 
+    // ---------------- PANELS ----------------
+
     public void OpenAlbum()
     {
         currentState = GameState.Album;
-
         player.SetGameplayActive(false);
 
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
 
         Time.timeScale = 0f;
-
         ui.ShowHUD(false);
 
         AlbumUIController.Instance.OpenAlbum();
@@ -148,14 +143,12 @@ public class GameManager : MonoBehaviour
     public void CloseAlbum()
     {
         currentState = GameState.Playing;
-
         player.SetGameplayActive(true);
 
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
 
         Time.timeScale = 1f;
-
         ui.ShowHUD(true);
 
         AlbumUIController.Instance.CloseAlbum();
@@ -164,7 +157,6 @@ public class GameManager : MonoBehaviour
     public void OpenQuestPanel()
     {
         currentState = GameState.Quest;
-
         player.SetGameplayActive(false);
 
         Cursor.visible = true;
@@ -179,7 +171,6 @@ public class GameManager : MonoBehaviour
     public void CloseQuestPanel()
     {
         currentState = GameState.Playing;
-
         player.SetGameplayActive(true);
 
         Cursor.visible = false;
@@ -191,12 +182,11 @@ public class GameManager : MonoBehaviour
         QuestUIController.Instance.CloseQuestPanel();
     }
 
-    // -------- BUTTON ACTIONS --------
+    // ---------------- BUTTON ACTIONS ----------------
 
     public void RestartGame()
     {
         PhotoManager.Instance.DeleteAllPhotos();
-
         Time.timeScale = 1f;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }

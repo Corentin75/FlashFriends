@@ -12,10 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 847e8210e7f13484ca0bb353a14c6673, type: 3}
   m_Name: PhotoQuest_1
   m_EditorClassIdentifier: Assembly-CSharp::PhotoQuest
-  questTitle: Miam miam
-  description: Photographiez une femme et un stand de nourriture !
+  questTitle: First Memory
+  description: Take a photo of a man and a woman.
   requiredTags:
-  - Female
-  - FoodStall
-  rewardPoints: 100
-  completed: 0
+  - tag: Female
+    count: 1
+  - tag: Male
+    count: 1
+  rewardPoints: 50
+  completed: 1
