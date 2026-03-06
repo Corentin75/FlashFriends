@@ -12,6 +12,8 @@ public class PhotoManager : MonoBehaviour
 
     private string photoFolderPath;
 
+    public int totalPhotosTaken = 0;
+
     private void Awake()
     {
         if (Instance == null)
@@ -25,6 +27,8 @@ public class PhotoManager : MonoBehaviour
 
     public void CapturePhoto(int score = 0)
     {
+        totalPhotosTaken++;
+
         // Render the camera in the RenderTexture
         photoCamera.targetTexture = photoRenderTexture;
         photoCamera.Render();
@@ -82,6 +86,18 @@ public class PhotoManager : MonoBehaviour
         string jsonPath = Path.Combine(photoFolderPath, fileName.Replace(".png", ".json"));
 
         File.WriteAllText(jsonPath, json);
+    }
+
+    public void DeleteAllPhotos()
+    {
+        if (Directory.Exists(photoFolderPath))
+        {
+            Directory.Delete(photoFolderPath, true);
+        }
+
+        Directory.CreateDirectory(photoFolderPath);
+
+        Debug.Log("All photos deleted.");
     }
 }
 

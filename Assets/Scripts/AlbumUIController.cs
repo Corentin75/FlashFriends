@@ -34,13 +34,6 @@ public class AlbumUIController : MonoBehaviour
         albumPanel.SetActive(true);
         isOpen = true;
 
-        playerController.SetGameplayActive(false);
-
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
-
-        Time.timeScale = 0f;
-
         albumManager.RefreshAlbum();
     }
 
@@ -48,13 +41,6 @@ public class AlbumUIController : MonoBehaviour
     {
         albumPanel.SetActive(false);
         isOpen = false;
-
-        playerController.SetGameplayActive(true);
-
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
-
-        Time.timeScale = 1f;
     }
 
     public void ShowPhotoFullScreen(Texture2D tex, int photoIndex)
