@@ -46,6 +46,11 @@ public class PlayerController : MonoBehaviour
         animator = GetComponent<Animator>();
     }
 
+    void Start()
+    {
+        SetGameplayActive(false);
+    }
+
     private void OnEnable()
     {
         moveAction.action.Enable();
